@@ -8,13 +8,13 @@ let city = 'meerut';
 let dataw;
 let lat;
 let lon;
-let cord;
+// let cord = {lattitude: 0, longitude: 0};
 
-app.get('/weather',(req,res) => {
 
+app.get('/weather/:cityname',(req,res) => {
+    city = req.params.cityname;
     const urlw = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api_key}`
     https.get(urlw, (response) => {
-        console.log("weather"+response.statusCode);
 
         response.on("data",(data) => {
             dataw = JSON.parse(data)
@@ -25,11 +25,36 @@ app.get('/weather',(req,res) => {
                 lattitude: lat,
                 longitude: lon
             }
-            res.send(cord);
+            res.redirect(`/weather/${cord.lattitude}/${cord.longitude}`);
         })
     })
 
 })
+
+app.get('/weather/:lat/:lon', (req,res) => {
+    const urla = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${req.params.lat}&lon=${req.params.lon}&appid=${api_key}`
+
+    https.get(urla, (resp) =>{
+
+        resp.on("data", (data) => {
+            const adata = JSON.parse(data);
+            const listm = adata.list[0].main;
+            const list = adata.list[0];
+            // const aqi = list.main.aqi
+            // console.log(list);
+            // console.log(aqi);
+            const para = {
+                aqi: listm.aqi,
+                pm2_5: list.components.pm2_5,
+                pm10: list.components.pm10
+            }
+
+            // console.log(para.aqi);
+            res.send(`the aqi is ${para.aqi} and pm 2.5 is ${para.pm2_5}, pm10 is ${para.pm10}`);
+        })
+    })
+})
+
 
 app.listen(3000, ()=>{
     console.log("listening to port 3000");
