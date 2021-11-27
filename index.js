@@ -1,7 +1,6 @@
 const api_key = '41d30b8a6314d8058dfda998502bbf44';
 const express = require('express');
 const https = require('https');
-const http = require('http');
 const app = express();
 let city = 'meerut';
 
